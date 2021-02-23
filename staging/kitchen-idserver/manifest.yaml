@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kitchen
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kitchen-web
+  namespace: kitchen  
+spec:
+  selector:
+    matchLabels:
+      app: kitchen-web
+  template:
+    metadata:
+      labels:
+        app: kitchen-web
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+      - name: kitchen-web-server
+        image: 15091983/kitchen-web:v.0.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        env:
+        - name: PORT
+          value: "80"
+                    
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kitchen-web
+  namespace: kitchen
+spec:
+  selector:
+    app: kitchen-web
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  type: LoadBalancer
+
